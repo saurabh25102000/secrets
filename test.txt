@@ -1,1 +1,2 @@
-Hii, this is just for testing purpose to test wheathet git add works or not
+This article was really helpful for me and explains what all the libraries do and how they work:
+https://medium.com/@prashantramnyc/node-js-with-passport-authentication-simplified-76ca65ee91e5

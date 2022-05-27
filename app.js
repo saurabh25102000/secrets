@@ -54,6 +54,14 @@ app.get("/register", (req, res)=>{
 })
 
 app.get("/secrets", (req, res)=>{
+  // The below line was added so we can't display the "/secrets" page
+  // after we logged out using the "back" button of the browser, which
+  // would normally display the browser cache and thus expose the
+  // "/secrets" page we want to protect. Code taken from this post.
+  res.set(
+        'Cache-Control',
+        'no-cache, private, no-store, must-revalidate, max-stal e=0, post-check=0, pre-check=0'
+  );
   if(req.isAuthenticated()){
     res.render("secrets")
   }else{
@@ -61,10 +69,10 @@ app.get("/secrets", (req, res)=>{
   }
 })
 
-app.get("/logout", (req, res, next)=>{
+app.get("/logout", (req, res)=>{
   req.logout((err)=>{
     if(err){
-      return next(err)
+      console.log(err)
     }else{
       res.redirect("/")
     }
@@ -86,24 +94,36 @@ app.post("/register", (req, res)=>{
 
 })
 
-app.post("/login", (req, res)=>{
+// this is the new login route, which authenticates first and THEN
+// does the login (which is required to create the session, or so I
+// understood from the passport.js documentation).
+// A failed login (wrong password) will give the browser error
+// "unauthorized".
 
-  const user = new User({
-    username: req.body.username,
-    password: req.body.password
-  })
+app.post("/login", passport.authenticate("local", {
+  successRedirect: "/secrets",
+  failureRedirect: "/login"
+}))
 
-  req.login(user, function(err){
-    if(err){
-      console.log(err)
-    }else{
-      passport.authenticate("local")(req, res, function () {
-        res.redirect("/secrets")
-      })
-    }
-  })
-
-})
+// this is the original login route (with the bug):
+// app.post("/login", (req, res)=>{
+//
+//   const user = new User({
+//     username: req.body.username,
+//     password: req.body.password
+//   })
+//
+//   req.login(user, function(err){
+//     if(err){
+//       console.log(err)
+//     }else{
+//       passport.authenticate("local")(req, res, function () {
+//         res.redirect("/secrets")
+//       })
+//     }
+//   })
+//
+// })
 
 app.listen(3000, ()=>{
   console.log("app is listening on port 3000")
