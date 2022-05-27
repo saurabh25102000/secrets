@@ -6,7 +6,7 @@ register users with username and password(using mongoDB and mongoose)
 database encryption using mongoose encryption npm package
 using environment variables to kepp secrets safe(dotenv npm package)
 # level 3:
-hashing passwords
+hashing passwords using md5 npm package
 hacking 101
 # level 4
 salting and hashing passwords with bcrypt
